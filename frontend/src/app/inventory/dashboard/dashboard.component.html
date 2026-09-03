@@ -1,0 +1,50 @@
+<header class="topbar">
+  <a class="brand" href="/" aria-label="ABLSoft inventory home"><span class="brand-mark" aria-hidden="true">A</span> ABLSoft <span class="brand-divider"></span><span class="workspace-name">Inventory</span></a>
+  <span class="workspace-label">PRODUCT WORKSPACE</span>
+</header>
+
+<main>
+  <div class="page-heading">
+    <div><p class="eyebrow">OVERVIEW</p><h1>Product inventory</h1><p class="subtitle">Your stock, quantities, and purchase history in one place.</p></div>
+    <div class="heading-actions">
+      <a mat-stroked-button href="/samples/inventory-valid.xlsx" download>Download sample</a>
+      <button mat-flat-button class="import-button" (click)="openImport()"><span aria-hidden="true">＋</span> Import data</button>
+    </div>
+  </div>
+
+  @if (notice()) {
+    <div class="notice" role="status"><span>{{ notice() }}</span><button mat-button (click)="notice.set('')" aria-label="Dismiss import confirmation">Dismiss</button></div>
+  }
+
+  <section class="summary-grid" aria-label="Inventory summary" [attr.aria-busy]="loading()">
+    <article class="summary-card"><span class="metric-label">Total products</span><strong>{{ summary() ? (summary()!.totalProducts | number) : '—' }}</strong><span class="metric-description">Distinct product SKUs</span></article>
+    <article class="summary-card value-card"><span class="metric-label">Inventory value <span class="currency-tag">{{ summary()?.currency || 'USD' }}</span></span><strong>{{ summary() ? (summary()!.totalInventoryValue | currency:summary()!.currency:'symbol':'1.2-2') : '—' }}</strong><span class="metric-description">Unit price × quantity across all stock</span></article>
+    <article class="summary-card"><span class="metric-label">Average stock age</span><strong>{{ summary() ? (summary()!.averageStockAgeDays | number:'1.1-1') : '—' }} <small>days</small></strong><span class="metric-description">Average across inventory entries</span></article>
+  </section>
+
+  <section class="inventory-panel" aria-labelledby="table-title">
+    <div class="panel-heading"><div><h2 id="table-title">Inventory entries <span class="count-badge">{{ page()?.totalElements ?? 0 | number }}</span></h2><p>Each entry represents a product and purchase date.</p></div>@if (summary()) { <span class="as-of">As of {{ summary()!.asOfDate | dateOnly }}</span> }</div>
+    <div class="progress-slot">@if (loading()) { <mat-progress-bar mode="indeterminate" aria-label="Loading inventory" /> }</div>
+
+    @if (error()) {
+      <div class="empty-state error-state" role="alert"><h3>{{ error()!.title }}</h3><p>{{ error()!.detail }}</p><button mat-stroked-button (click)="reload()">Try again</button></div>
+    } @else if (page() && page()!.totalElements === 0 && !loading()) {
+      <div class="empty-state"><span class="empty-icon" aria-hidden="true">↥</span><h3>Your inventory starts here</h3><p>Upload an XLSX workbook to see your products and stock summary.</p><button mat-flat-button (click)="openImport()">Import your first workbook</button><a href="/samples/inventory-valid.xlsx" download>Need an example? Download the sample</a></div>
+    } @else {
+      <div class="table-scroll" tabindex="0" role="region" aria-label="Sortable inventory table" [attr.aria-busy]="loading()">
+        <table mat-table [dataSource]="page()?.content || []" matSort [matSortActive]="query.sort" [matSortDirection]="query.direction" matSortDisableClear (matSortChange)="sortChanged($event)">
+          <ng-container matColumnDef="sku"><th mat-header-cell *matHeaderCellDef mat-sort-header>Product SKU</th><td mat-cell *matCellDef="let item"><span class="sku">{{ item.sku }}</span></td></ng-container>
+          <ng-container matColumnDef="productName"><th mat-header-cell *matHeaderCellDef mat-sort-header>Product name</th><td mat-cell *matCellDef="let item" class="product-name">{{ item.productName }}</td></ng-container>
+          <ng-container matColumnDef="category"><th mat-header-cell *matHeaderCellDef mat-sort-header>Category</th><td mat-cell *matCellDef="let item"><span class="category">{{ item.category }}</span></td></ng-container>
+          <ng-container matColumnDef="purchaseDate"><th mat-header-cell *matHeaderCellDef mat-sort-header>Purchase date</th><td mat-cell *matCellDef="let item">{{ item.purchaseDate | dateOnly }}</td></ng-container>
+          <ng-container matColumnDef="unitPrice"><th mat-header-cell *matHeaderCellDef mat-sort-header class="numeric">Unit price</th><td mat-cell *matCellDef="let item" class="numeric">{{ item.unitPrice | currency:(summary()?.currency || 'USD'):'symbol':'1.2-2' }}</td></ng-container>
+          <ng-container matColumnDef="quantity"><th mat-header-cell *matHeaderCellDef mat-sort-header class="numeric">Quantity</th><td mat-cell *matCellDef="let item" class="numeric">{{ item.quantity | number }}</td></ng-container>
+          <ng-container matColumnDef="stockAgeDays"><th mat-header-cell *matHeaderCellDef mat-sort-header class="numeric">Stock age</th><td mat-cell *matCellDef="let item" class="numeric">{{ item.stockAgeDays | number }} <span class="days-label">days</span></td></ng-container>
+          <tr mat-header-row *matHeaderRowDef="columns"></tr><tr mat-row *matRowDef="let row; columns: columns;"></tr>
+        </table>
+      </div>
+      <mat-paginator [length]="page()?.totalElements || 0" [pageIndex]="query.page" [pageSize]="query.size" [pageSizeOptions]="[10, 25, 50, 100]" [disabled]="loading()" showFirstLastButtons (page)="pageChanged($event)" aria-label="Inventory pagination" />
+    }
+  </section>
+  <footer class="page-footer"><span>ABLSoft · Product inventory</span><span>XLSX imports · Up to 10,000 rows per workbook</span></footer>
+</main>

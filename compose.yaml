@@ -1,0 +1,55 @@
+name: ablsoft-inventory
+
+services:
+  database:
+    image: postgres:17.10-alpine
+    environment:
+      POSTGRES_DB: inventory
+      POSTGRES_USER: inventory
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-inventory}
+    volumes:
+      - inventory-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U inventory -d inventory"]
+      interval: 5s
+      timeout: 3s
+      retries: 15
+    restart: unless-stopped
+
+  backend:
+    build: ./backend
+    environment:
+      DB_URL: jdbc:postgresql://database:5432/inventory
+      DB_USER: inventory
+      DB_PASSWORD: ${DB_PASSWORD:-inventory}
+      APP_TIMEZONE: ${APP_TIMEZONE:-UTC}
+      APP_CURRENCY: ${APP_CURRENCY:-USD}
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      start_period: 40s
+      retries: 10
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    ports:
+      - "${APP_PORT:-8088}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://127.0.0.1/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  inventory-data:

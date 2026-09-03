@@ -1,0 +1,20 @@
+<h2 mat-dialog-title>Import inventory</h2>
+<mat-dialog-content>
+  <p class="intro">Upload an Excel workbook. New entries will be added after all rows pass validation.</p>
+  <div class="file-box">
+    <label for="inventory-file">Choose your workbook</label>
+    <input id="inventory-file" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" (change)="selectFile($event)" [disabled]="uploading()" aria-describedby="file-help">
+    <p id="file-help">XLSX · Maximum 5 MB · Up to 10,000 rows</p>
+  </div>
+  <div class="format-help"><h3>Required columns</h3><p>Product SKU, Product Name, Category, Purchase Date, Unit Price, Quantity</p><p>Use <strong>YYYY-MM-DD</strong> for text dates. Keep SKUs as text. Each SKU and purchase date must be unique.</p><a href="/samples/inventory-valid.xlsx" download>Download a sample workbook</a></div>
+  @if (uploading()) { <div class="upload-status" role="status"><p>Validating and importing {{ file()?.name }}…</p><mat-progress-bar mode="indeterminate" aria-label="Import in progress" /></div> }
+  @if (problem()) {
+    <section class="import-errors" role="alert"><h3>{{ problem()!.title }}</h3><p>{{ problem()!.detail }}</p>
+      @if (problem()!.errors?.length) {
+        <div class="error-list"><table><caption class="visually-hidden">Workbook validation errors</caption><thead><tr><th>Row</th><th>Column</th><th>Issue</th></tr></thead><tbody>@for (error of problem()!.errors; track $index) { <tr><td>{{ error.row }}</td><td>{{ error.column }}</td><td>{{ error.message }}</td></tr> }</tbody></table></div>
+        @if ((problem()!.totalErrors ?? 0) > (problem()!.errors?.length ?? 0)) { <p>Showing the first {{ problem()!.errors?.length }} of {{ problem()!.totalErrors }} errors.</p> }
+      }
+    </section>
+  }
+</mat-dialog-content>
+<mat-dialog-actions align="end"><button mat-button mat-dialog-close [disabled]="uploading()">Cancel</button><button mat-flat-button (click)="upload()" [disabled]="!file() || uploading()">{{ uploading() ? 'Importing…' : 'Import workbook' }}</button></mat-dialog-actions>

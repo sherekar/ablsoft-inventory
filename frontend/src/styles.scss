@@ -1,0 +1,30 @@
+@use '@angular/material' as mat;
+
+html {
+  @include mat.theme((color: (primary: mat.$green-palette, tertiary: mat.$cyan-palette), typography: (plain-family: 'Arial, sans-serif', brand-family: 'Arial, sans-serif'), density: 0));
+  --mat-sys-primary: #246744;
+  --mat-sys-on-primary: #fff;
+  --mat-sys-surface: #fff;
+  --mat-sys-on-surface: #20392b;
+  --mat-sys-outline: #aab9af;
+  --mat-sys-outline-variant: #dfe7e2;
+  --mat-sys-corner-full: 8px;
+  --ink: #1a3023;
+  --muted: #64756a;
+  --accent: #246744;
+  --border: #dfe7e2;
+  color-scheme: light;
+  font-size: 16px;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: #f4f7f5; color: var(--ink); font-family: Arial, Helvetica, sans-serif; -webkit-font-smoothing: antialiased; }
+a { color: var(--accent); text-underline-offset: 3px; }
+button, a, input { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 3px solid #71a985; outline-offset: 4px; }
+.mat-mdc-button-base { font-size: .875rem !important; letter-spacing: 0 !important; font-weight: 600 !important; }
+.mat-mdc-dialog-container { --mdc-dialog-container-shape: 14px; }
+.mat-mdc-dialog-title { letter-spacing: -.02em !important; }
+.mat-sort-header-container { min-height: 48px; }
+th.numeric .mat-sort-header-container { justify-content: flex-end; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }

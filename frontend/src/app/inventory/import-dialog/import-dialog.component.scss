@@ -1,0 +1,19 @@
+.intro { margin: 0 0 24px; color: var(--muted); line-height: 1.6; }
+.file-box { border: 1px dashed #a5b9ac; background: #f5f9f6; border-radius: 8px; padding: 22px; }
+.file-box label { display: block; font-weight: 650; color: var(--ink); margin-bottom: 14px; }
+input { width: 100%; font: inherit; font-size: .875rem; }
+input::file-selector-button { border: 1px solid #c5d2c9; background: #fff; border-radius: 5px; padding: 9px 12px; margin-right: 10px; color: #254b35; cursor: pointer; font: inherit; }
+.file-box p { font-size: .8rem; margin-bottom: 0; color: var(--muted); }
+.format-help { margin: 24px 0 10px; }
+h3 { font-size: .9rem; font-weight: 650; margin: 0 0 8px; }
+.format-help p { font-size: .875rem; color: var(--muted); line-height: 1.6; margin: 8px 0; }
+.format-help a { display: inline-block; font-size: .875rem; margin-top: 4px; }
+.upload-status { font-size: .875rem; margin-top: 24px; overflow-wrap: anywhere; }
+.import-errors { padding: 16px; margin-top: 24px; border-radius: 8px; border: 1px solid #ebc4c4; background: #fff7f7; color: #842a2a; }
+.import-errors p { font-size: .875rem; line-height: 1.6; }
+.error-list { max-height: 230px; overflow: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .8rem; }
+th, td { text-align: left; vertical-align: top; padding: 9px 8px; border-bottom: 1px solid #f0dada; }
+th { font-weight: 650; }
+td:last-child { min-width: 180px; }
+mat-dialog-actions { padding: 18px 24px !important; border-top: 1px solid var(--border); }
